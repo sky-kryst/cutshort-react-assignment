@@ -1,3 +1,9 @@
 {
-  "conventionalCommits.scopes": ["repo", "components", "index.tsx", "index.tsx"]
+  "conventionalCommits.scopes": [
+    "repo",
+    "components",
+    "index.tsx",
+    "index.tsx",
+    "pages"
+  ]
 }
