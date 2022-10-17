@@ -1,1 +1,1 @@
-sp;
+export * from './OnboardingLayout'
