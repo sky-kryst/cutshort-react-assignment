@@ -9,6 +9,7 @@ interface IProps {
   title: string;
   subtitle: string;
   pageNo: number;
+  titleImage?: typeof Image;
 }
 
 export const OnboardingLayout: React.FC<IProps> = ({
@@ -17,6 +18,7 @@ export const OnboardingLayout: React.FC<IProps> = ({
   title,
   subtitle,
   pageNo,
+  titleImage,
 }) => {
   return (
     <body className="bg-slate-200 h-screen w-screen flex justify-center items-center px-14 py-20">
