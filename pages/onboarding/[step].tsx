@@ -41,10 +41,10 @@ export default function Onboarding() {
     }),
     shallow
   );
-  const fullNameInput = useRef(null);
-  const displayNameInput = useRef(null);
-  const workspaceNameInput = useRef(null);
-  const workspaceURLInput = useRef(null);
+  const fullNameInput = useRef<HTMLInputElement>(null);
+  const displayNameInput = useRef<HTMLInputElement>(null);
+  const workspaceNameInput = useRef<HTMLInputElement>(null);
+  const workspaceURLInput = useRef<HTMLInputElement>(null);
 
   let onboardingPageData: {
     title: string;
