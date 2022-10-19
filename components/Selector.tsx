@@ -5,16 +5,26 @@ interface IProps {
   title: string;
   subtext: string;
   isActive: boolean;
+  onClick?: () => void;
 }
 
-const Selector: React.FC<IProps> = ({ icon, title, subtext }) => {
+export const Selector: React.FC<IProps> = ({
+  icon,
+  title,
+  subtext,
+  onClick,
+  isActive,
+}) => {
   return (
-    <div>
+    <div
+      onClick={onClick}
+      className={`w-36 border rounded-md ${
+        isActive && "border-brand-indigo"
+      } h-36 px-6 py-4 flex flex-col justify-between`}
+    >
       {icon}
-      <span>{title}</span>
-      <span>{subtext}</span>
+      <div className="text-sm font-bold">{title}</div>
+      <div className="text-xs text-gray-600">{subtext}</div>
     </div>
   );
 };
-
-export default Selector;

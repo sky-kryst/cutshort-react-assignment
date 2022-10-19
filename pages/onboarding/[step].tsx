@@ -1,10 +1,50 @@
-import { useRouter } from "next/router";
-import { Input, OnboardingLayout } from "../../components";
-import Selector from "../../components/Selector";
+import { GetStaticProps } from "next";
 import Image from "next/future/image";
+import { useRouter } from "next/router";
+import { useRef } from "react";
+import shallow from "zustand/shallow";
+import { Input, OnboardingLayout, Selector } from "../../components";
 import EdenCorrect from "../../public/images/eden_correct.png";
+import { useOnboardingStore } from "../../stores/onboarding";
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const routeExists =
+    Number(context.params?.step) > 0 && Number(context.params?.step) < 5;
+
+  if (!routeExists) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { step: string } }> = [];
+
+  for (let i = 1; i <= 4; i++) {
+    paths.push({ params: { step: String(i) } });
+  }
+
+  return { paths, fallback: true };
+}
+
 export default function Onboarding() {
   const router = useRouter();
+  const { displayName, accountType } = useOnboardingStore(
+    (state) => ({
+      displayName: state.displayName,
+      accountType: state.accountType,
+    }),
+    shallow
+  );
+  const fullNameInput = useRef(null);
+  const displayNameInput = useRef(null);
+  const workspaceNameInput = useRef(null);
+  const workspaceURLInput = useRef(null);
 
   let onboardingPageData: {
     title: string;
@@ -17,46 +57,83 @@ export default function Onboarding() {
 
   let childInputFields: React.ReactNode;
 
-  const onFormSubmission = (event: any) => {
-    event.preventDefault();
-
+  const routeToNextPage = () => {
     router.push(`/onboarding/${Number(router.query.step) + 1}`);
   };
 
+  const onFormSubmission = (event: any, callback: Function) => {
+    event.preventDefault();
+
+    callback();
+  };
+
+  let onSubmit: () => void;
+
   switch (Number(router.query.step)) {
     case 1:
+      onSubmit = () => {
+        useOnboardingStore.setState({
+          fullName: fullNameInput.current?.value ?? "",
+          displayName: displayNameInput.current?.value ?? "",
+        });
+
+        routeToNextPage();
+      };
+
       onboardingPageData = {
         title: "Welcome! First things first...",
         subtitle: "You can always change them later.",
         submitButtonTitle: "Create Workspace",
         pageNo: 1,
-        onFormSubmission,
+        onFormSubmission: (e) => onFormSubmission(e, onSubmit),
       };
 
       childInputFields = (
         <span className="flex flex-col justify-between h-32">
-          <Input title="Full Name" placeholder="Steve Jobs" />
-          <Input title="Display Name" placeholder="Steve" />
+          <Input
+            title="Full Name"
+            placeholder="Steve Jobs"
+            ref={fullNameInput}
+          />
+          <Input
+            title="Display Name"
+            placeholder="Steve"
+            ref={displayNameInput}
+          />
         </span>
       );
       break;
     case 2:
+      onSubmit = () => {
+        useOnboardingStore.setState({
+          workspaceName: workspaceNameInput.current?.value ?? "",
+          workspaceURL: workspaceURLInput.current?.value ?? "",
+        });
+
+        routeToNextPage();
+      };
+
       onboardingPageData = {
-        title: "Let's setup home for your work",
+        title: "Let's setup a home for your work",
         subtitle: "You can always create another workspace later.",
         submitButtonTitle: "Create Workspace",
         pageNo: 2,
-        onFormSubmission,
+        onFormSubmission: (e) => onFormSubmission(e, onSubmit),
       };
 
       childInputFields = (
         <span className="flex flex-col justify-between h-32">
-          <Input title="Workspace Name" placeholder="Eden" />
+          <Input
+            title="Workspace Name"
+            placeholder="Eden"
+            ref={workspaceNameInput}
+          />
           <Input
             title="Workspace URL"
             placeholder="Example"
             type="url"
             optional
+            ref={workspaceURLInput}
           />
         </span>
       );
@@ -67,17 +144,20 @@ export default function Onboarding() {
         subtitle: "We'll streamline your setup experience accordingly.",
         submitButtonTitle: "Create Workspace",
         pageNo: 3,
-        onFormSubmission,
+        onFormSubmission: (e) => onFormSubmission(e, routeToNextPage),
       };
 
       childInputFields = (
         <span className="flex h-max w-80 justify-between">
           <Selector
+            onClick={() =>
+              useOnboardingStore.setState({ accountType: "Individual" })
+            }
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                fill="currentColor"
+                fill={accountType === "Individual" ? "#664DE5" : "currentColor"}
                 className="w-6 h-6"
               >
                 <path
@@ -88,14 +168,16 @@ export default function Onboarding() {
               </svg>
             }
             title="For myself"
-            subtext=""
+            subtext="Write better. Think clearly. Stay organized."
+            isActive={accountType === "Individual"}
           />
           <Selector
+            onClick={() => useOnboardingStore.setState({ accountType: "Team" })}
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                fill="currentColor"
+                fill={accountType === "Team" ? "#664DE5" : "currentColor"}
                 className="w-6 h-6"
               >
                 <path
@@ -107,19 +189,22 @@ export default function Onboarding() {
               </svg>
             }
             title="With my team"
-            subtext=""
+            subtext="Wikis, docs, tasks & projects, all in one."
+            isActive={accountType === "Team"}
           />
         </span>
       );
       break;
     case 4:
       onboardingPageData = {
-        title: "Congratulations,!",
+        title: `Congratulations, ${displayName}!`,
         subtitle: "You have completed onboarding, you can start using Eden!",
         submitButtonTitle: "Launch Eden",
         pageNo: 4,
-        onFormSubmission,
-        titleImage: <Image src={EdenCorrect} alt="Onboarding successful" />,
+        onFormSubmission: (e) => onFormSubmission(e, routeToNextPage),
+        titleImage: (
+          <Image src={EdenCorrect} alt="Onboarding successful" height={50} />
+        ),
       };
       break;
     default:
@@ -128,7 +213,7 @@ export default function Onboarding() {
         subtitle: "",
         submitButtonTitle: "",
         pageNo: 0,
-        onFormSubmission,
+        onFormSubmission: (e) => onFormSubmission(e, routeToNextPage),
       };
       break;
   }
