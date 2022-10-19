@@ -16,6 +16,7 @@ const Home: NextPage = () => {
         <title>CutShort Assignment</title>
         <meta name="description" content="UI assignment for CutShort" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
       </Head>
     </div>
   );
