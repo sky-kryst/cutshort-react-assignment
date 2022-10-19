@@ -19,9 +19,9 @@ export const OnboardingLayout: React.FC<IProps> = ({
   pageNo,
 }) => {
   return (
-    <body className="bg-slate-200 h-screen w-screen flex justify-center items-center px-14 py-28">
+    <body className="bg-slate-200 h-screen w-screen flex justify-center items-center px-14 py-20">
       <div
-        className={`bg-neutral-50 h-full w-full flex flex-col items-center justify-between py-32`}
+        className={`bg-neutral-50 h-full w-full flex flex-col items-center justify-between py-32 shadow-sm`}
       >
         {/* <div className="w-1/3 border border-black"> */}
         <Image src={EdenLogo} alt="Eden logo" height={39.75} width={94.5} />
