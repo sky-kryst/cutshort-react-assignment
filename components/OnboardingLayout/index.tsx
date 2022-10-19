@@ -1,7 +1,7 @@
-import React from "react";
-import { Stepper } from "../Stepper";
 import Image from "next/image";
+import React from "react";
 import EdenLogo from "../../public/images/eden_logo.png";
+import { Stepper } from "../Stepper";
 
 interface IProps {
   children?: React.ReactNode;
@@ -32,7 +32,7 @@ export const OnboardingLayout: React.FC<IProps> = ({
           <h1 className="font-bold text-2xl">{title}</h1>
           <h4 className="font-normal text-gray-500 text-sm">{subtitle}</h4>
         </div>
-        <form>
+        <form className="flex flex-col justify-between">
           {children}
           <button
             type="submit"
@@ -46,5 +46,3 @@ export const OnboardingLayout: React.FC<IProps> = ({
     </body>
   );
 };
-
-
